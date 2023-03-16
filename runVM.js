@@ -108,6 +108,11 @@ export const runVM = async () => {
 	let adbDevicesOutput = execSync("adb devices").toString().split('\n');
   
   const devices = returnDevicesFromAdbOutput(adbDevicesOutput)
+  // if devices is empty log error im bold red and exit
+  if (devices.length === 0) {
+    log("No devices found".bold.red);
+    process.exit(1);
+  }
 
   
   log("  [] installing termux on all devices");
