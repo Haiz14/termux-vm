@@ -119,7 +119,7 @@ export const runVM = async () => {
   await installTermux(devices);
 
   log("  [] running boot-script on all devices");
-  runBootScript(devices);
+  await runBootScript(devices);
   log("Script executed on all devices".green);
 
 }
