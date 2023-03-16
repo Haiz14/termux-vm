@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Haiz14/vm-nodejs.git"
+    "url": "git+https://github.com/Haiz14/termux-vm.git"
   },
   "keywords": [
     "node"
