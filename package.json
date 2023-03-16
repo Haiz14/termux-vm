@@ -1,5 +1,5 @@
 {
-  "name": "vm-nodejs",
+  "name": "termux-vm",
   "version": "0.1.0",
   "description": "control varoius android connected devices, bia adb as virtual machines",
   "main": "index.js",
