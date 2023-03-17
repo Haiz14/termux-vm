@@ -16,6 +16,7 @@ import {error, log} from 'console';
  * @property {string} configProperties.configFileName - The name of the configuration file to check.
  * @property {boolean} configProperties.configFileExists - Stores whether comfig file exists or not
  * @property {Object.<string, boolean>} configProperties.configPropertyNames - An object representing the names of the configuration properties to check for existence.
+ * @property {Object.<string, boolean>} configProperties.configPropertyChecks - An object representing the checks to perform on the configuration properties.
  */
 
 /**
@@ -38,11 +39,15 @@ const THINGS_TO_CHECK = {
     configPropertyNames: {
 			"wifiName": false,
 			"wifiPassword": false,
+    },
+    configPropertyChecks: {
+      "wifi does not have white space": false,
     }
   }
 };
 
-
+// function whose curly braces is not closed ? 
+//
 /**
  * Represents the status of the environment check.
  * @type {boolean}
@@ -124,7 +129,6 @@ const  checkFileExists = (filename) => {
   }
 };
 
-
 /**
  * Checks the environment by verifying the existence of CLI commands, files, and properties.
  *
@@ -154,8 +158,17 @@ const checkEnvironment = (env) => {
 
     if (config !== null) {
       const configPropNames = configProperties.configPropertyNames;
+      const configPropChecks = configProperties.configPropertyChecks;
       for (const propName in configPropNames) {
         configPropNames[propName] = hasProperty(config, propName);
+      }
+        // Check for white space in wifi name
+      for (const checkName in configPropChecks) {
+        if (checkName === 'wifiNameDoesNotHaveWhiteSpace') {
+          configPropChecks[checkName] = !config.wifiName.includes(' ');
+          log(config.wifiName.includes(' '));
+          log(configPropChecks);
+        }
       }
     }
   }
@@ -205,8 +218,20 @@ const logEnviromentStatus = (enviromentStatusObject) => {
   logBold(('\nConfig File Properties: In case of error please fill those properties in: ' +  configFile.yellow));
   for (const configProperty in enviromentStatusObject.configProperties.configPropertyNames) {
     logItemStatus(configProperty, enviromentStatusObject.configProperties.configPropertyNames[configProperty]);
+
   }
+
+  // Log the status of configPropertChecks
+  logBold(('\nConfig File Property Checks: In case of error please fix those properties in: ' +  configFile.yellow));
+  for (const configPropertyCheck in enviromentStatusObject.configProperties.configPropertyChecks) {
+    logItemStatus(configPropertyCheck, enviromentStatusObject.configProperties.configPropertyChecks[configPropertyCheck]);
 };
+};
+
+// function to check if string has white spaces
+const hasWhiteSpace = (s) => {
+  return /\s/g.test(s);
+}
 
 /**
  * Performs enviroment check, log check status
@@ -218,6 +243,7 @@ export const performEnviromentCheck = () => {
   logEnviromentStatus(enviromentStatusObject);
   if(ENVIROMENT_STATUS_PERFECT)
     return
+  // log error if wifi name has white spaces
   error("\nPlease fix the above errors for the cli to run".red.bold);
   process.exit(1);
 };

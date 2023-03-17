@@ -13,9 +13,6 @@ import colors from 'colors';
 
 const promiseExec = promisify(exec);
 
-
-
-
 const returnDevicesFromAdbOutput = (adbOutput) => {
    return adbOutput
     .filter(line => line.split('\t').length == 2) // remove all lines except the ones with deviceId and deviceName
@@ -25,7 +22,6 @@ const returnDevicesFromAdbOutput = (adbOutput) => {
     });
 
 }
-
 
 const removeNonAarch64Devices = (devicesArray) => {
   return devicesArray.filter((device) => {
@@ -45,6 +41,7 @@ const isTermuxInstalled = (deviceId) =>  {
     });
   return termuxInstalled;
 }
+
 const installTermux = async (devicesArray) => {
   const installPromises = devicesArray.map(async (device) => {
     // if termux is installed returm resolved promise else install termux
@@ -66,11 +63,21 @@ const installTermux = async (devicesArray) => {
   return Promise.all(installPromises);
 };
 
-// TOTEST: This function is not tested yet
 const connectToWifi = async (devicesArray, wifiName, wifiPassword ) => {
   
   const wifiPromises = devicesArray.map(async (device) => {
-    return promiseExec(`adb -s ${device} shell cmd -w wifi connect-network ${wifiName} wpa2 ${wifiPassword}`);
+    // add error support
+    await promiseExec(`adb -s ${device} shell 'svc wifi enable'`);
+
+    
+    try{
+      await promiseExec(`adb -s ${device} shell cmd -w wifi connect-network ${wifiName} wpa2 ${wifiPassword}`);
+    }
+    catch (e) {
+      log("Error connecting to wifi".red);
+      log(e);
+    }
+    return Promise.resolve();
   });
     return Promise.all(wifiPromises);
 }
