@@ -112,8 +112,6 @@ const runBootScript = async (devicesArray) => {
  */
 export const runVM = async (bootConfig) => {
   log("\n------------")
-  // log bootConfig for debugging
-  log(bootConfig);
   log("\nRunning VM".bold)
 	let adbDevicesOutput = execSync("adb devices").toString().split('\n');
   
@@ -127,7 +125,7 @@ export const runVM = async (bootConfig) => {
   log("  [] installing termux on all devices");
   await installTermux(devices);
 
-  log(" [] connecting to wifi");
+  log("  [] connecting to wifi");
   await connectToWifi(devices, bootConfig.wifiName, bootConfig.wifiPassword);
 
   log("  [] running boot-script on all devices");

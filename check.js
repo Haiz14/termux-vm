@@ -41,7 +41,7 @@ const THINGS_TO_CHECK = {
 			"wifiPassword": false,
     },
     configPropertyChecks: {
-      "wifi does not have white space": false,
+      "wifi name does not have white space": false,
     }
   }
 };
@@ -164,10 +164,8 @@ const checkEnvironment = (env) => {
       }
         // Check for white space in wifi name
       for (const checkName in configPropChecks) {
-        if (checkName === 'wifiNameDoesNotHaveWhiteSpace') {
+        if (checkName === 'wifi name does not have white space') {
           configPropChecks[checkName] = !config.wifiName.includes(' ');
-          log(config.wifiName.includes(' '));
-          log(configPropChecks);
         }
       }
     }
