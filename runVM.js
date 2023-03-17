@@ -65,19 +65,14 @@ const installTermux = async (devicesArray) => {
 
   return Promise.all(installPromises);
 };
-// read wifi name and password from a json file bootConfig.json
-const getWifiConfig = () => {
-  const wifiConfig = readFileSync('./bootConfig.json');
-  return JSON.parse(wifiConfig);
-}
 
 // TOTEST: This function is not tested yet
-const connectToWifi = async (devicesArray, ) => {
-  const wifiConfig = getWifiConfig();
+const connectToWifi = async (devicesArray, wifiName, wifiPassword ) => {
+  
   const wifiPromises = devicesArray.map(async (device) => {
-    return promiseExec(`adb -s ${device} shell cmd -w wifi connect-network ${wifiConfig.wifiName} wpa2 ${wifiConfig.wifiPassword}`);
-    return Promise.all(wifiPromises);
+    return promiseExec(`adb -s ${device} shell cmd -w wifi connect-network ${wifiName} wpa2 ${wifiPassword}`);
   });
+    return Promise.all(wifiPromises);
 }
 
 const runBootScript = async (devicesArray) => {
@@ -102,8 +97,16 @@ const runBootScript = async (devicesArray) => {
 
 }
 
-export const runVM = async () => {
+/**
+ * @function
+ * @param {Object} bootConfig
+ * @returns {void}
+ * @description This function runs the VM on multiple devices
+ */
+export const runVM = async (bootConfig) => {
   log("\n------------")
+  // log bootConfig for debugging
+  log(bootConfig);
   log("\nRunning VM".bold)
 	let adbDevicesOutput = execSync("adb devices").toString().split('\n');
   
@@ -113,10 +116,12 @@ export const runVM = async () => {
     log("No devices found".bold.red);
     process.exit(1);
   }
-
   
   log("  [] installing termux on all devices");
   await installTermux(devices);
+
+  log(" [] connecting to wifi");
+  await connectToWifi(devices, bootConfig.wifiName, bootConfig.wifiPassword);
 
   log("  [] running boot-script on all devices");
   await runBootScript(devices);
